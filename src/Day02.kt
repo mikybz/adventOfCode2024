@@ -2,48 +2,28 @@ fun main(args: Array<String>) = dayRunner(Day02())
 
 class Day02 : DayAdvent {
 
-    override fun part1(input: List<String>): Any =
+    override fun part1(input: List<String>): Any = // 516
         input.parse()
-            .map { it.safeIncrease() || it.safeDecrease() }
-            .count { it == true }
+            .count { it.isStrictlyMonotonic() }
 
-    override fun part2(input: List<String>): Any {
-        val numbers = input.parse()
-        val safe = numbers.map { it.safeIncreaseDampened() || it.safeDecreaseDampened() }
-        val sum = safe.count { it == true }
-        return sum
-    }
-
-    // 554 is to low
-    // 561 correct
+    override fun part2(input: List<String>): Any = // 561
+        input.parse()
+            .count { it.isMonotonicDampened() }
 
     private fun List<String>.parse(): List<List<Int>> =
-        map { line ->
-            line.run {
-                split("\\s+".toRegex())
-                    .map { it.toInt() }
-            }
+        map { it.split("\\s+".toRegex()).map(String::toInt) }
+
+    private fun List<Int>.isStrictlyMonotonic(): Boolean =
+        isStrictlyIncreasing() || isStrictlyDecreasing()
+
+    private fun List<Int>.isStrictlyIncreasing(): Boolean =
+        windowed(2).all { (a, b) -> b - a in 1..3 }
+
+    private fun List<Int>.isStrictlyDecreasing(): Boolean =
+        windowed(2).all { (a, b) -> a - b in 1..3 }
+
+    private fun List<Int>.isMonotonicDampened(): Boolean =
+        isStrictlyMonotonic() || indices.any { index ->
+            filterIndexed { i, _ -> i != index }.isStrictlyMonotonic()
         }
-
-    private fun List<Int>.safeIncrease(): Boolean =
-        windowed(2).map { (a, b) ->
-            (1..3).contains(b - a)
-        }.all { it }
-
-    private fun List<Int>.safeDecrease(): Boolean =
-        windowed(2).map { (a, b) ->
-            (1..3).contains(a - b)
-        }.all { it }
-
-    private fun List<Int>.safeIncreaseDampened(): Boolean =
-        safeIncrease() ||
-                (0..size).map() { number ->
-                    filterIndexed { index, _ -> index != number }.safeIncrease()
-                }.any { it }
-
-    private fun List<Int>.safeDecreaseDampened(): Boolean =
-        safeDecrease() ||
-                (0..size).map() { number ->
-                    filterIndexed { index, _ -> index != number }.safeDecrease()
-                }.any { it }
 }
