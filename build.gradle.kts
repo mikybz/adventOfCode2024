@@ -1,12 +1,15 @@
 plugins {
-    kotlin("jvm") version "1.7.22"
+    kotlin("jvm") version "2.1.0"
     application
 }
 
+application {
+    mainClass.set("DayRunAll") // Use the name of your file with "Kt" suffix for default package.
+}
 
 dependencies {
-    runtimeOnly("org.jetbrains.kotlin:kotlin-main-kts:1.7.22")
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jsr223:1.7.22")
+    runtimeOnly("org.jetbrains.kotlin:kotlin-main-kts:2.1.0")
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jsr223:2.1.0")
 }
 
 repositories {
@@ -21,6 +24,6 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "8.8"
+        gradleVersion = "8.11.1"
     }
 }

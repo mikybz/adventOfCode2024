@@ -6,7 +6,7 @@ fun main(args: Array<String>) = dayRunner(Day03())
 class Day03 : DayAdvent {
     val regexMulti = Regex("^mul\\((\\d+),(\\d+)\\)")
 
-    override fun part1(input: List<String>): Any = // 163931492
+    override fun part1(input: List<String>): Any =
         input.flatMap { line ->
             line.windowed(size = 120, step = 1, partialWindows = true)
                 .mapNotNull { regexMulti.find(it)?.destructured?.let { (a, b) -> a.toInt() to b.toInt() } }

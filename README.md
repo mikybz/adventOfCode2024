@@ -1,4 +1,11 @@
-# adventofcode2024
+# adventofcode 2024
 
-Welcome to the Advent of Code[^aoc] Kotlin project created by [mikybz][
+To run all the solutions, execute the following command:
 
+```shell
+gradlew run
+```
+Alternatively, you can run a specific day's solution from the src folder.
+The file _DayRunAll.kt_ will run all the solutions for you.
+
+The project is configured to use latest version of Kotlin. You can change it in the _build.gradle.kts_ file.

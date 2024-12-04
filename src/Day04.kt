@@ -1,8 +1,7 @@
 fun main(args: Array<String>) = dayRunner(Day04())
 
 class Day04 : DayAdvent {
-
-    override fun part1(input: List<String>): Any { // 2378
+    override fun part1(input: List<String>): Any {
         return input
             .map { it.lowercase().toCharArray().toTypedArray() }
             .trackDebugState(reset = true)
@@ -13,7 +12,7 @@ class Day04 : DayAdvent {
     }
 
     // Alle "strings" med 4 i lengden fra matrisen i 8 forskjellige retninger (ikke optimalisert)
-    private fun <T> List<Array<T>>.findSubLists(directions: Array<Direction>, length: Int): List<List<T>> {
+    fun <T> List<Array<T>>.findSubLists(directions: Array<Direction>, length: Int): List<List<T>> {
         val subLists = mutableListOf<List<T>>()
         for (y in 0 until this.size) {
             for (x in 0 until this[y].size) {
@@ -44,12 +43,12 @@ class Day04 : DayAdvent {
         return subLists
     }
 
-    private enum class Direction { NORTH, EAST, SOUTH, WEST, NORTH_EAST, SOUTH_EAST, SOUTH_WEST, NORTH_WEST }
+    enum class Direction { NORTH, EAST, SOUTH, WEST, NORTH_EAST, SOUTH_EAST, SOUTH_WEST, NORTH_WEST }
 
-    /**
-     * Part 2
-     **/
-    override fun part2(input: List<String>): Any { // 1796
+    /*******************************
+     ***        Part 2           ***
+     *******************************/
+    override fun part2(input: List<String>): Any {
         return input
             .map { it.lowercase().toList() }
             .trackDebugState(reset = true)
@@ -61,7 +60,7 @@ class Day04 : DayAdvent {
     }
 
     // Returnerer alle submatriser av 3x3 for matrisen
-    private fun <T> List<List<T>>.findSubMatrixes(dim: Int): List<List<List<T>>> {
+    fun <T> List<List<T>>.findSubMatrixes(dim: Int): List<List<List<T>>> {
         val subMatrix = mutableListOf<List<List<T>>>()
         for (y in 0..this.size - dim) {
             for (x in 0..this[y].size - dim) {
@@ -98,18 +97,16 @@ class Day04 : DayAdvent {
         return subMatrixes
     }
 
-    // Returnerer alle submatriser som matcher minst en av filtermatrisene
-    private fun <T> List<List<List<T>>>.filterMatrix(filters: List<Array<Array<T?>>>): List<List<List<T>>> {
-        // Filter matrices that match any of the criteria specified by any filter matrix in the list.
-        return this.filter { matrix ->
-            filters.any { filter ->  // Check if the matrix matches any filter
+    // Fra en liste av submatriser, returner de som matcher minst en av filtermatrisene
+    fun <T> List<List<List<T>>>.filterMatrix(filters: List<Array<Array<T?>>>): List<List<List<T>>> =
+        this.filter { matrix ->
+            filters.any { filter ->
                 matrix.indices.all { y ->
                     matrix[y].indices.all { x ->
                         val filterValue: T? = filter[y][x]
-                        filterValue == null || (matrix[y][x] == filterValue)  // Check filter condition
+                        filterValue == null || (matrix[y][x] == filterValue)
                     }
                 }
             }
         }
-    }
 }
