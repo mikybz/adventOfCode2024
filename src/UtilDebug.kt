@@ -37,6 +37,19 @@ fun <T> List<T>.subListSplitter(predicate: (T) -> Boolean): List<List<T>> =
         }
     }
 
+fun <T> List<T>.swapElements( index1: Int, index2: Int): List<T> {
+    // Create a mutable copy of the list
+    val newList = toMutableList()
+
+    // Swap the elements
+    val temp = newList[index1]
+    newList[index1] = newList[index2]
+    newList[index2] = temp
+
+    // Return the modified list
+    return newList
+}
+
 fun <T> printMatrix(matrix: Collection<Collection<T>>) {
     println(matrix.joinToString(separator = "\n") { it.joinToString(separator = "") })
 }
