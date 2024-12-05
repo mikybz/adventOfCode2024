@@ -1,10 +1,3 @@
-/*
-75|13
-53|13
-
-75,47,61,53,29
-97,61,53,29,13
- */
 fun main(args: Array<String>) = dayRunner(Day05())
 
 class Day05 : DayAdvent {
@@ -12,8 +5,7 @@ class Day05 : DayAdvent {
     override fun part1(input: List<String>): Any? { //5948
         val (rules, pages) = parseInput(input)
         return pages
-            .mapNotNull { getMiddlePageIfCorrect(it, rules)}
-            .trackDebugState()
+            .mapNotNull { getMiddlePageIfCorrect(it, rules) }
             .sum()
     }
 
@@ -26,65 +18,56 @@ class Day05 : DayAdvent {
 
     private fun getMiddlePageIfCorrect(pages: List<Int>, rules: List<List<Int>>): Int? =
         (pages[pages.size / 2]).takeIf {
-            pages.indices.all { isPageNrCorrect(it, pages, rules) }
+            pages.indices.all { doesCurrentIndexComplyToAllRules(it, pages, rules) }
         }
 
-    private fun getMiddlePageIfNotCorrect(pages: List<Int>, rules: List<List<Int>>): Int? {
-        if (getMiddlePageIfCorrect(pages, rules) != null) {
-            return null
-        }
-        val pageFixIterations = mutableListOf<List<Int>>(pages)
-        var counter = 0
-        while (getMiddlePageIfCorrect(pageFixIterations.last(), rules) == null) {
-            if(counter++>1000) throw Exception("Infinite loop")
-            var pagesToFix = pageFixIterations.last().trackDebugState()
-            val firstFailIndex = pagesToFix.indices.first { index -> !isPageNrCorrect(index, pagesToFix, rules) }
-            pageFixIterations.add(swapIndexWitherror(firstFailIndex, pagesToFix, rules))
-        }
-        var pagesFixed = pageFixIterations.last()
+    private fun doesCurrentIndexComplyToAllRules(pageIndex: Int, pages: List<Int>, rules: List<List<Int>>): Boolean =
+        pagesRequiredToBeAfterIndexButIsBefore(pageIndex, pages, rules).isEmpty()
 
-        return (pagesFixed[pagesFixed.size / 2])
+    private fun pagesRequiredToBeAfterIndexButIsBefore(pageIndex: Int, pages: List<Int>, rules: List<List<Int>>): List<Int> {
+        val pageNr = pages[pageIndex]
+        val pagesMustBeAfter = rules
+            .filter { it[0] == pageNr }
+            .map { it[1] }
+            .filter { pages.contains(it) }
 
+        val firstPageIndexWithPageNr = pages.indices.first { pages[it] == pageNr }
+        val pagesAfter = pages.subList(firstPageIndexWithPageNr + 1, pages.size)
+        return pagesMustBeAfter.filter { it !in pagesAfter }
     }
 
-private fun isPageNrCorrect(pageIndex: Int, pages: List<Int>, rules: List<List<Int>>): Boolean {
-    val pageNr = pages[pageIndex]
-    val firstPageIndexWithPage = pages.indices.first { pages[it] == pageNr }
-//        val pagesBefore = pages.subList(0, firstPageIndexWithPage)
-    val pagesAfter = pages.subList(firstPageIndexWithPage + 1, pages.size)
-    val pagesMustBeAfter = rules.filter { it[0] == pageNr }.map { it[1] }.filter { pages.contains(it) }
-    val ruleResult = pagesMustBeAfter.isEmpty() || pagesMustBeAfter.all { it in pagesAfter }
 
-    return ruleResult
-}
+    /*******************************
+     ***        Part 2           ***
+     *******************************/
+    override fun part2(input: List<String>): Any? { //5948
+        val (rules, pages) = parseInput(input)
+        return pages
+            .mapNotNull { getMiddlePageIfNotCorrect(it, rules) }
+            .sum()
+    }
 
-private fun swapIndexWitherror(pageIndex: Int, pages: List<Int>, rules: List<List<Int>>): List<Int> {
-    val pageNr = pages[pageIndex]
-    val firstPageIndexWithPage = pages.indices.first { pages[it] == pageNr }
-    val pagesAfter = pages.subList(firstPageIndexWithPage + 1, pages.size)
-    val pagesMustBeAfter = rules.filter { it[0] == pageNr }.map { it[1] }.filter { pages.contains(it) }
-    val missingPagesAfter = pagesMustBeAfter.filter { it !in pagesAfter }
-    val indexesOfMissingAfterPages = missingPagesAfter.map { pages.indexOf(it) }
-    val lastIndexesOfMissingAfterPages = indexesOfMissingAfterPages.maxOf { it }
+    private fun isOrderCorrect(pages: List<Int>, rules: List<List<Int>>): Boolean =
+        getMiddlePageIfCorrect(pages, rules) != null
 
-    return pages.swapElements(firstPageIndexWithPage, lastIndexesOfMissingAfterPages)
-}
+    private fun getMiddlePageIfNotCorrect(pages: List<Int>, rules: List<List<Int>>): Int? {
+        if (isOrderCorrect(pages, rules)) return null
 
-
-override fun part2(input: List<String>): Any? { //5948
-    val (rules, pages) = parseInput(input)
-    val sum = pages
-        .trackDebugState(reset = true)
-        .mapNotNull() {
-            //println(it)
-            getMiddlePageIfNotCorrect(it, rules)
+        var pagesIterator = pages
+        // Each time we detect error, we swap the first index violating the rules, then try again
+        while (!isOrderCorrect(pagesIterator, rules)) {
+            val firstFailIndex = pagesIterator.indices
+                .first { index -> !doesCurrentIndexComplyToAllRules(index, pagesIterator, rules) }
+            pagesIterator = swapIndexWitherror(firstFailIndex, pagesIterator, rules)
         }
-        .trackDebugState()
-        .sum()
-//        val sum = 3
-//        val middlePageIfCorrect = getMiddlePageIfCorrect(pages[3], rules)
+        return (pagesIterator[pagesIterator.size / 2])
+    }
 
-    return sum
+    private fun swapIndexWitherror(pageIndex: Int, pages: List<Int>, rules: List<List<Int>>): List<Int> {
+        val lastIndexesOfMissingAfterPages =
+            pagesRequiredToBeAfterIndexButIsBefore(pageIndex, pages, rules)
+                .map { pages.indexOf(it) }
+                .maxOf { it }
+        return pages.swapElements(pageIndex, lastIndexesOfMissingAfterPages)
+    }
 }
-}
-

@@ -51,4 +51,3 @@ fun readAdventResults(): List<AdventResults> {
 }
 
 fun readInput(name: String) = File("src/data", "$name.txt").readLines()
-

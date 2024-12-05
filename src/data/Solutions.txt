@@ -2,3 +2,4 @@ AdventResults(day=Day01, part1Test=11, part1=1506483, part2Test=31, part2=231269
 AdventResults(day=Day02, part1Test=2, part1=516, part2Test=4, part2=561)
 AdventResults(day=Day03, part1Test=161, part1=163931492, part2Test=48, part2=76911921)
 AdventResults(day=Day04, part1Test=18, part1=2378, part2Test=9, part2=1796)
+AdventResults(day=Day05, part1Test=143, part1=5948, part2Test=123, part2=3062)

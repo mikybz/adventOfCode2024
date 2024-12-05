@@ -4,10 +4,8 @@ class Day04 : DayAdvent {
     override fun part1(input: List<String>): Any {
         return input
             .map { it.lowercase().toCharArray().toTypedArray() }
-            .trackDebugState(reset = true)
             .findSubLists(Direction.values(), "xmas".length)
             .map { it.joinToString("") }
-            .trackDebugState()
             .count { it == "xmas" }
     }
 
@@ -51,11 +49,8 @@ class Day04 : DayAdvent {
     override fun part2(input: List<String>): Any {
         return input
             .map { it.lowercase().toList() }
-            .trackDebugState(reset = true)
             .findSubMatrixes("mas".length)
-            .trackDebugState()
-            .filterMatrix(getCompareMatrixes("mas").trackDebugState())
-            .trackDebugState()
+            .filterMatrix(getCompareMatrixes("mas"))
             .count()
     }
 

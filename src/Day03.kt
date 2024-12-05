@@ -15,7 +15,6 @@ class Day03 : DayAdvent {
 
     override fun part2(input: List<String>): Any = // 76911921
         input
-            .trackDebugState(reset = true)
             .flatMap { line ->
                 line.windowed(size = 120, step = 1, partialWindows = true)
                     .mapNotNull { win ->
@@ -30,7 +29,6 @@ class Day03 : DayAdvent {
                         else nr to enable
                     }
             }
-            .trackDebugState()
             .runningFold(Accumulator()) { acc, (nr, enable) ->
                 when {
                     enable != null -> acc.copy(enabled = enable)
@@ -38,7 +36,6 @@ class Day03 : DayAdvent {
                     else -> acc.copy(value = acc.value + nr!!.first * nr.second)
                 }
             }
-            .trackDebugState()
             .last()
             .run { value }
 
