@@ -19,7 +19,7 @@ class Day04 : DayAdvent {
                 for (direction in directions) {
                     val subList = mutableListOf<T>()
                     for (i in 0 until length) {
-                        val yxPair = when (direction) {
+                        val (outY, outX) = when (direction) {
                             Direction.NORTH -> y - i to x
                             Direction.EAST -> y to x + i
                             Direction.SOUTH -> y + i to x
@@ -29,10 +29,10 @@ class Day04 : DayAdvent {
                             Direction.SOUTH_WEST -> y + i to x - i
                             Direction.NORTH_WEST -> y - i to x - i
                         }
-                        if (yxPair.first < 0 || yxPair.first >= this.size || yxPair.second < 0 || yxPair.second >= this[y].size) {
+                        if (outY < 0 || outY >= this.size || outX < 0 || outX >= this[y].size) {
                             break
                         }
-                        subList.add(this[yxPair.first][yxPair.second])
+                        subList.add(this[outY][outX])
                     }
                     if (subList.size == length) {
                         subLists.add(subList)
