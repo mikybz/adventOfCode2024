@@ -109,7 +109,7 @@ class Day06 : DayAdvent {
     override fun part2(input: List<String>): Any? {
         val world = parseInput(input)
         val paradoxTable = world.exploredPt2.clone() // empty matrix of world
-        world.cave.indices.forEach { y ->
+        world.cave.indices.toList().parallelStream().forEach { y ->
             world.cave[y].indices.forEach { x ->
                 val testPos = Pos(y, x)
                 if (world.cave.getVal(testPos) != 0) {
