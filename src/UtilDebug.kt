@@ -54,6 +54,10 @@ fun <T> printMatrix(matrix: Collection<Collection<T>>) {
     println(matrix.joinToString(separator = "\n") { it.joinToString(separator = "") })
 }
 
+fun <T> printMatrix(matrix: Array<Array<T>>) {
+    println(matrix.joinToString(separator = "\n") { it.joinToString(separator = "") })
+}
+
 
 fun <T> transpose(input: List<List<T>>): List<List<T>> =
     (0..input[0].size - 1)
