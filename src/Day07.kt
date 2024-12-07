@@ -3,25 +3,26 @@ fun main(args: Array<String>) = dayRunner(Day07())
 class Day07 : DayAdvent {
 
     override fun part1(input: List<String>): Any {
-        val equations = input.parse()
-        val validEquations = equations.map { (lineresult, testValues) ->
-            Triple(lineresult, testValues, validEquationsPlusMul(lineresult, testValues))
-        } .filter{ it.third.isNotEmpty() }
-
-//        validEquations.forEach{ (lineresult, testValues, validEquations)->
-//            println("lineresult=$lineresult testValues=$testValues validEquations=$validEquations")
-//        }
-        val sum = validEquations.sumOf { it.first }
-//        println("sum=$sum")
-
-        return sum
+        return 0
+//        val equations = input.parse()
+//        val validEquations = equations.map { (lineresult, testValues) ->
+//            Triple(lineresult, testValues, validEquationsPlusMul(lineresult, testValues))
+//        } .filter{ it.third.isNotEmpty() }
+//
+////        validEquations.forEach{ (lineresult, testValues, validEquations)->
+////            println("lineresult=$lineresult testValues=$testValues validEquations=$validEquations")
+////        }
+//        val sum = validEquations.sumOf { it.first }
+////        println("sum=$sum")
+//
+//        return sum
     }
 
     override fun part2(input: List<String>): Any {
         val equations = input.parse()
-        val validEquations = equations.map { (lineresult, testValues) ->
-            Triple(lineresult, testValues, validEquationsPlusMulConc(lineresult, testValues))
-        }.filter { it.third.isNotEmpty() }
+        val validEquations = equations.filter { (lineresult, testValues) ->
+            validEquationsPlusMulConc(lineresult, testValues)
+        }
 
 //        validEquations.forEach{ (lineresult, testValues, validEquations)->
 //            println("lineresult=$lineresult testValues=$testValues validEquations=$validEquations")
@@ -99,22 +100,43 @@ class Day07 : DayAdvent {
         return recursiveOpsBuilder(newListOps, index + 1, endIndex, operators3)
     }
 
+    fun iterativeOpsBuilder(opCount: Int,operators: List<Char>): List<List<Char>> {
+        if (opCount < 1) return emptyList()
+
+        // Start with single-character operator lists
+        var currentOps = operators.map { listOf(it) }
+
+        // Iteratively build combinations
+        repeat(opCount - 1) {
+            currentOps = currentOps.flatMap { op ->
+                operators.map { op + it } // Concatenate existing ops with new operators
+            }
+        }
+
+        return currentOps
+    }
+
     private fun allOperatorsPlusMulConc(ints: List<Int>): List<List<Char>> {
         val opCount = ints.size - 1
-        if (opCount < 1) return listOf()
-        val operators3 = listOf('+', '*', '|')
+        if (opCount < 1) return emptyList()
+        val operators = listOf('+', '*', '|')
 
-        val listOps = operators3.map { listOf(it) }.toMutableList()
-        val allOperands = recursiveOpsBuilder(listOps, 1, opCount, operators3)
-//        println("ints=$ints  allOperands=${allOperands}")
-        return allOperands
+        var operatorBuildIterator = operators.map { listOf(it) }
+        repeat(opCount - 1) {
+            // For hvert eksisterende liste-element lager vi 3 Nye sublister med hve sin end-operator
+            operatorBuildIterator = operatorBuildIterator.flatMap { op ->
+                operators.map { op + it }
+            }
+        }
+
+        return operatorBuildIterator
     }
 
 
-    private fun validEquationsPlusMulConc(results: Long, testValues: List<Int>): List<String> {
+    private fun validEquationsPlusMulConc(results: Long, testValues: List<Int>): Boolean{
         val allOperators = allOperatorsPlusMulConc(testValues)
-        val validOperators = ArrayList<List<Char>>()
-        val validEquations = ArrayList<String>()
+//        val validOperators = ArrayList<List<Char>>()
+//        val validEquations = ArrayList<String>()
 
         allOperators.map { operators ->
 
@@ -133,15 +155,15 @@ class Day07 : DayAdvent {
             }
             if (result == results) {
                 //println("result=$result")
-                validOperators.add(operators)
-                validEquations.add(mergeAlternating(testValues, operators).joinToString(" "))
-                return validEquations
+//                validOperators.add(operators)
+//                validEquations.add(mergeAlternating(testValues, operators).joinToString(" "))
+                return true
             } else {
 //                println("resultxx=$result")
             }
         }
 
-        return validEquations
+        return false
     }
 
 
