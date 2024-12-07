@@ -58,6 +58,13 @@ fun <T> printMatrix(matrix: Array<Array<T>>) {
     println(matrix.joinToString(separator = "\n") { it.joinToString(separator = "") })
 }
 
+// Create one list out of two by interleaving elements
+fun <T> mergeAlternating(listA: List<T>, listB: List<T>): List<T> {
+    val minSize = minOf(listA.size, listB.size)
+    val interleaved = (0 until minSize).flatMap { listOf(listA[it], listB[it]) }
+    return interleaved + listA.drop(minSize) + listB.drop(minSize)
+}
+
 
 fun <T> transpose(input: List<List<T>>): List<List<T>> =
     (0..input[0].size - 1)

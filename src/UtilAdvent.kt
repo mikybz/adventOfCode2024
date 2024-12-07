@@ -1,5 +1,6 @@
 import java.io.File
 import kotlin.system.measureTimeMillis
+import kotlinx.coroutines.*
 
 interface DayAdvent {
     fun part1(input: List<String>): Any?

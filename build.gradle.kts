@@ -10,6 +10,7 @@ application {
 dependencies {
     runtimeOnly("org.jetbrains.kotlin:kotlin-main-kts:2.1.0")
     runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jsr223:2.1.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
 }
 
 repositories {
