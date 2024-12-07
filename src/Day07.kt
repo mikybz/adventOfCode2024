@@ -20,18 +20,21 @@ class Day07 : DayAdvent {
 
     override fun part2(input: List<String>): Any {
         val equations = input.parse()
-        val validEquations = equations.filter { (lineresult, testValues) ->
-            validEquationsPlusMulConc(lineresult, testValues)
+        val operatorLookups = generateOperatorLookups(equations,3)
+        val validSums = equations.mapNotNull { (lineresult, testValues) ->
+            validEquationsPlusMulConc(lineresult, testValues, operatorLookups)
         }
 
 //        validEquations.forEach{ (lineresult, testValues, validEquations)->
 //            println("lineresult=$lineresult testValues=$testValues validEquations=$validEquations")
 //        }
-        val sum = validEquations.sumOf { it.first }
+        val sum = validSums.sumOf { it }
         //println("sum=$sum")
 
         return sum
     }
+
+
 
     private fun validEquationsPlusMul(results: Long, testValues: List<Int>): List<String> {
         val allOperators = allOperatorsPlusMul(testValues)
@@ -100,7 +103,7 @@ class Day07 : DayAdvent {
         return recursiveOpsBuilder(newListOps, index + 1, endIndex, operators3)
     }
 
-    fun iterativeOpsBuilder(opCount: Int,operators: List<Char>): List<List<Char>> {
+    fun iterativeOpsBuilder(opCount: Int, operators: List<Char>): List<List<Char>> {
         if (opCount < 1) return emptyList()
 
         // Start with single-character operator lists
@@ -114,6 +117,32 @@ class Day07 : DayAdvent {
         }
 
         return currentOps
+    }
+
+    private fun generateOperatorLookups(pairs: List<Pair<Long, List<Int>>>, operatorTypes: Int): Array<List<List<Char>>> {
+        val maxOperators = pairs.map { it.second.size - 1 }.maxOrNull() ?: 0
+        return generateOperatorLookups(maxOperators, operatorTypes)
+    }
+
+    private fun generateOperatorLookups(maxOperators: Int, operatorNrs: Int = 2): Array<List<List<Char>>> {
+        var lookupOperatorPermutations: Array<List<List<Char>>> = Array(maxOperators) { listOf() }
+        if (maxOperators < 1) return lookupOperatorPermutations
+        val operators = when (operatorNrs) {
+            3 -> listOf('+', '*', '|')
+            else -> listOf('+', '*')
+        }
+
+        var operatorBuildIterator = operators.map { listOf(it) }
+        lookupOperatorPermutations[0] = operatorBuildIterator
+        for (i in 1 until maxOperators) {
+            operatorBuildIterator = operatorBuildIterator.flatMap { op ->
+                operators.map { op + it }
+            }
+            lookupOperatorPermutations[i] = operatorBuildIterator
+        }
+
+
+        return lookupOperatorPermutations
     }
 
     private fun allOperatorsPlusMulConc(ints: List<Int>): List<List<Char>> {
@@ -133,10 +162,12 @@ class Day07 : DayAdvent {
     }
 
 
-    private fun validEquationsPlusMulConc(results: Long, testValues: List<Int>): Boolean{
-        val allOperators = allOperatorsPlusMulConc(testValues)
-//        val validOperators = ArrayList<List<Char>>()
-//        val validEquations = ArrayList<String>()
+    private fun validEquationsPlusMulConc(
+        expected: Long,
+        testValues: List<Int>,
+        operatorLookups: Array<List<List<Char>>>
+    ): Long ?{
+        val allOperators = operatorLookups[testValues.size - 2]
 
         allOperators.map { operators ->
 
@@ -144,26 +175,30 @@ class Day07 : DayAdvent {
 
             val firstValue = testValues.first().toLong()
 
-            val result = testValues.drop(1).zip(operators).fold(firstValue) { acc, (value, operator) ->
+            val calculated = testValues.drop(1).zip(operators).fold(firstValue) { acc, (value, operator) -> // langsom
 //                println("acc=$acc value=$value operator=$operator")
+                if (acc > expected) return@fold acc
                 when (operator) {
                     '+' -> acc + value
                     '*' -> acc * value
-                    '|'-> (acc.toString()+value.toString()).toLong()
+                    '|' -> (acc.toString() + value.toString()).toLong() // langsom
                     else -> throw IllegalArgumentException("Unknown operator $operator")
                 }
+
+
+
             }
-            if (result == results) {
+            if (calculated == expected) {
                 //println("result=$result")
 //                validOperators.add(operators)
 //                validEquations.add(mergeAlternating(testValues, operators).joinToString(" "))
-                return true
+                return calculated
             } else {
 //                println("resultxx=$result")
             }
         }
 
-        return false
+        return null
     }
 
 
