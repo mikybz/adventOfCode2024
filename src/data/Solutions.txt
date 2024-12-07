@@ -4,3 +4,4 @@ AdventResults(day=Day03, part1Test=161, part1=163931492, part2Test=48, part2=769
 AdventResults(day=Day04, part1Test=18, part1=2378, part2Test=9, part2=1796)
 AdventResults(day=Day05, part1Test=143, part1=5948, part2Test=123, part2=3062)
 AdventResults(day=Day06, part1Test=41, part1=4696, part2Test=6, part2=1443)
+AdventResults(day=Day07, part1Test=3749, part1=2314935962622, part2Test=11387, part2=401477450831495)

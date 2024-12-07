@@ -1,7 +1,7 @@
 class DayRunAll() {
     companion object {
         val allDays: Array<DayAdvent> =
-            arrayOf(Day01(), Day02(), Day03(), Day04(), Day05(), Day06())
+            arrayOf(Day01(), Day02(), Day03(), Day04(), Day05(), Day06(), Day07())
 
         @JvmStatic
         fun main(args: Array<String>) {
