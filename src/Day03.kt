@@ -1,7 +1,7 @@
 // Exempel data p2:
 // xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))
 
-fun main(args: Array<String>) = dayRunner(Day03())
+fun main() = dayRunner(Day03())
 
 class Day03 : DayAdvent {
     val regexMulti = Regex("^mul\\((\\d+),(\\d+)\\)")

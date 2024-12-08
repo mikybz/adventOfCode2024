@@ -1,13 +1,15 @@
-fun main(args: Array<String>) = dayRunner(Day04())
+import kotlin.enums.EnumEntries
+
+fun main() = dayRunner(Day04())
 
 class Day04 : DayAdvent {
     override fun part1(input: List<String>): Any {
         return input
             .map { it.lowercase().toCharArray().toTypedArray() }
-            .findSubLists2(Directions.values(), "xmas")
+            .findSubLists2(Directions.entries, "xmas")
     }
 
-    fun <T> List<Array<T>>.findSubLists2(directions: Array<Directions>, txt: String): Int {
+    fun <T> List<Array<T>>.findSubLists2(directions: EnumEntries<Directions>, txt: String): Int {
         val matrixLength = this.size
         val txtLength = txt.length
         var count = 0

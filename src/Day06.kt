@@ -1,6 +1,6 @@
 import Direction.entries
 
-fun main(args: Array<String>) = dayRunner(Day06())
+fun main() = dayRunner(Day06())
 
 class Day06 : DayAdvent {
 
