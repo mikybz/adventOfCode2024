@@ -35,10 +35,11 @@ class Day06 : DayAdvent {
         var finished = false
         var steps = 0
         var turns = 0
-        val dimentions = Pos(cave.size, cave[0].size)
-        val exploredFast = IntArray(dimentions.y * dimentions.x) { 0 }.apply { setPosFast(pos, dimentions, 1) }
-        var exploredPt2Fast = IntArray(dimentions.y * dimentions.x) { 0 }
+        val startPos = pos
+        val dimensions = Pos(cave.size, cave[0].size)
+        var exploredPt2Fast = createFastMatrix(dimensions)
         var stuck = false
+        var testPos: Pos? = null
 
         fun iterate() {
             val nextPos = pos + dir
@@ -50,20 +51,30 @@ class Day06 : DayAdvent {
                 finished = true
                 return
             }
-            if (cave[nextPos.y][nextPos.x] == 0) {
+            if (cave[nextPos.y][nextPos.x] == 0 && !crashedInTestPos(nextPos)) {
                 pos = nextPos
                 steps++
-                exploredFast.setPosFast(pos, dimentions, 1)
+                //exploredFast.setPosFast(pos, dimensions, 1)
                 return
             }
+            exploredPt2Fast.setPosFast(nextPos, dimensions, 0)
             dir = dir.turnRight()
             turns++
         }
 
+        // For part 2 we do not want add the testItem to the collition detection matrix
+        // since then we have to deepcopy the world, to allow parallel processing
+        // Instead we have a separate check for it
+        private fun crashedInTestPos(pos: Pos): Boolean {
+            return testPos?.let {
+                it == pos
+            } ?: false
+        }
+
         private fun pt2PosVerification(nextPos: Pos, dir1: Direction): Boolean {
-            val previousMask = exploredPt2Fast.getPosFast(nextPos, dimentions)
+            val previousMask = exploredPt2Fast.getPosFast(nextPos, dimensions)
             val updatePosMask = previousMask or dir1.getPosMask()
-            exploredPt2Fast.setPosFast(nextPos, dimentions, updatePosMask)
+            exploredPt2Fast.setPosFast(nextPos, dimensions, updatePosMask)
 
             if (previousMask == updatePosMask) {
                 stuck = true
@@ -76,36 +87,46 @@ class Day06 : DayAdvent {
             while (!finished) {
                 iterate()
             }
+            exploredPt2Fast.setPosFast(startPos, dimensions, 0xff)
             return stuck
         }
 
-        fun exploredSum(): Int = exploredFast.sumOf { it }
+        fun exploredSum(): Int =
+            exploredPt2Fast.filter { it != 0 }.size
 
-        override fun equals(other: Any?): Boolean = false // NOT USED
-        override fun hashCode(): Int = 0 // NOT USED
-
-        fun deepCopy() = copy(
-            cave = cave.map { it.copyOf() }.toTypedArray()
-        )
+        override fun equals(other: Any?): Boolean = false // not used, but needed for the compiler
+        override fun hashCode(): Int = 0                  // same here
     }
 
+
+    fun part2Inner(y: Int, world: World, paradoxTable: IntArray) {
+        world.cave[y].indices.forEach { x ->
+            val testPos = Pos(y, x)
+            if (world.cave.getVal(testPos) != 0) {
+                return@forEach
+            }
+            val testWorld = world.copy()
+            testWorld.testPos = testPos
+            if (testWorld.run()) {
+                paradoxTable.setPosFast(testPos, world.dimensions, 1)
+            }
+        }
+    }
 
     /*******************************
      ***        Part 2           ***
      *******************************/
     override fun part2(input: List<String>): Any? {
-        val world = parseInput(input)
-        val paradoxTable = world.exploredPt2Fast.clone() // empty matrix of world
-        world.cave.indices.toList().parallelStream().forEach { y ->
-            world.cave[y].indices.forEach { x ->
-                val testPos = Pos(y, x)
-                if (world.cave.getVal(testPos) != 0) {
-                    return@forEach
-                }
-                val testWorld = world.deepCopy().apply { cave.setPos(testPos, 1) }
-                if (testWorld.run()) {
-                    paradoxTable.setPosFast(testPos, world.dimentions, 1)
-                }
+        val world: World = parseInput(input)
+        val paradoxTable: IntArray = world.exploredPt2Fast.clone() // empty matrix of world
+        if (globalMultiThreadEnabled) {
+            world.cave.indices.toList().parallelStream().forEach { y ->
+                //processInParallel<Int, Unit>(world.cave.indices.toList()) { y ->
+                part2Inner(y, world, paradoxTable)
+            }
+        } else {
+            world.cave.indices.toList().forEach { y ->
+                part2Inner(y, world, paradoxTable)
             }
         }
         val sumOf = paradoxTable.sumOf { it }
@@ -128,37 +149,4 @@ enum class Direction(val dx: Int, val dy: Int) {
         return 1 shl this.ordinal // shift left by the ordinal
     }
 }
-
-data class Pos(val y: Int, val x: Int) {
-    operator fun plus(direction: Direction): Pos {
-        return Pos(y + direction.dy, x + direction.dx)
-    }
-
-    fun isOutside(cave: Array<Array<Int>>): Boolean {
-        return y < 0 || y >= cave.size || x < 0 || x >= cave[y].size
-    }
-}
-
-inline fun <reified T> List<List<T>>.toArrayMatrix(): Array<Array<T>> {
-    return Array(this.size) { rowIndex ->
-        this[rowIndex].toTypedArray()
-    }
-}
-
-fun <T> Array<Array<T>>.setPos(pos: Pos, value: T) {
-    this[pos.y][pos.x] = value
-}
-
-fun IntArray.setPosFast(pos: Pos, dim: Pos, value: Int) {
-    this[dim.y * pos.y + pos.x] = value
-}
-
-fun IntArray.getPosFast(pos: Pos, dim: Pos) = this[dim.y * pos.y + pos.x]
-
-fun <T> Array<Array<T>>.getVal(pos: Pos): T = this[pos.y][pos.x]
-
-
-
-
-
 

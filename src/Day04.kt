@@ -4,44 +4,32 @@ class Day04 : DayAdvent {
     override fun part1(input: List<String>): Any {
         return input
             .map { it.lowercase().toCharArray().toTypedArray() }
-            .findSubLists(Direction.values(), "xmas".length)
-            .map { it.joinToString("") }
-            .count { it == "xmas" }
+            .findSubLists2(Directions.values(), "xmas")
     }
 
-    // Alle "strings" med 4 i lengden fra matrisen i 8 forskjellige retninger (ikke optimalisert)
-    fun <T> List<Array<T>>.findSubLists(directions: Array<Direction>, length: Int): List<List<T>> {
-        val subLists = mutableListOf<List<T>>()
-        for (y in 0 until this.size) {
+    fun <T> List<Array<T>>.findSubLists2(directions: Array<Directions>, txt: String): Int {
+        val matrixLength = this.size
+        val txtLength = txt.length
+        var count = 0
+        for (y in 0 until matrixLength) {
             for (x in 0 until this[y].size) {
-                for (direction in directions) {
-                    val subList = mutableListOf<T>()
-                    for (i in 0 until length) {
-                        val (outY, outX) = when (direction) {
-                            Direction.NORTH -> y - i to x
-                            Direction.EAST -> y to x + i
-                            Direction.SOUTH -> y + i to x
-                            Direction.WEST -> y to x - i
-                            Direction.NORTH_EAST -> y - i to x + i
-                            Direction.SOUTH_EAST -> y + i to x + i
-                            Direction.SOUTH_WEST -> y + i to x - i
-                            Direction.NORTH_WEST -> y - i to x - i
+                dir@for (direction in directions) {
+                    for (i in 0 until txtLength) {
+                        val (outY, outX) = Pos(y, x) + direction.pos * i
+                        if (outY < 0 || outY >= matrixLength || outX < 0 || outX >= this[y].size) {
+                            continue@dir
                         }
-                        if (outY < 0 || outY >= this.size || outX < 0 || outX >= this[y].size) {
-                            break
+                        if (this[outY][outX]!=txt[i]) {
+                            continue@dir
                         }
-                        subList.add(this[outY][outX])
                     }
-                    if (subList.size == length) {
-                        subLists.add(subList)
-                    }
+                    count++
                 }
             }
         }
-        return subLists
+        return count
     }
 
-    enum class Direction { NORTH, EAST, SOUTH, WEST, NORTH_EAST, SOUTH_EAST, SOUTH_WEST, NORTH_WEST }
 
     /*******************************
      ***        Part 2           ***
