@@ -91,6 +91,8 @@ data class Pos(val y: Int, val x: Int) {
     }
 }
 
+//fun List<Pos>.unique(): List<Pos> = this.distinct()
+
 enum class Directions(val pos: Pos) {
     NORTH(Pos(y = -1, x = 0)),
     EAST(Pos(y = 0, x = 1)),
@@ -116,6 +118,12 @@ inline fun <reified T> List<List<T>>.toArrayMatrix(): Array<Array<T>> {
         this[rowIndex].toTypedArray()
     }
 }
+inline fun <reified R> List<String>.toArrayMatrix(transform: (Char) -> R): Array<Array<R>> {
+    return this.map { line ->
+        line.map { char -> transform(char) }.toTypedArray()
+    }.toTypedArray()
+}
+
 
 typealias FastMatrix = IntArray
 /** Fast Matrix is implemented as an Integer 1D array, for extremely fast access and initialization */
