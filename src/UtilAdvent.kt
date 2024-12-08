@@ -34,9 +34,10 @@ fun dayRunWithResult(dayAdvent: DayAdvent): AdventResults {
         part2Test = part2Test,
         part2 = part2
     )
-    println("  $results")
-    println("  Execution time1: $executionTime1 ms")
-    println("  Execution time2: $executionTime2 ms")
+    //println("  $results")
+    println("  $day")
+    println("    Results: ${results.toConsole()}")
+    println("    Runtime: part1=${executionTime1}ms  part2=${executionTime2}ms")
     return results
 }
 
@@ -46,7 +47,11 @@ data class AdventResults(
     var part1: String = "",
     var part2Test: String = "",
     var part2: String = ""
-)
+) {
+    fun toConsole(): String {
+        return "part1Test=$part1Test, part1=$part1, part2Test=$part2Test, part2=$part2"
+    }
+}
 
 fun readAdventResults(): List<AdventResults> {
     val results = mutableListOf<AdventResults>()
