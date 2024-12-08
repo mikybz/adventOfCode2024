@@ -134,7 +134,7 @@ fun <T, R> processInParallel(
     dispatcher: CoroutineDispatcher = Dispatchers.Default,
     task: suspend (T) -> R?
 ): List<R> = runBlocking {
-    items.map { item ->
+    items.map { item: T ->
         async(dispatcher) { task(item) }
     }.mapNotNull { it.await() }
 }

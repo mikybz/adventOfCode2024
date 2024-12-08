@@ -8,12 +8,13 @@ fun <T> List<T>.trackDebugState(state: Any? = null, reset: Boolean = false): Lis
 
 fun trackDebugStateValue(state: Any, reset: Boolean = false) {
     if (globalTracing) {
-        if (reset) globalDebugStates.clear()
-        globalDebugStates.add(state)
+        if (reset) debugStates.clear()
+        debugStates.add(state)
     }
 }
 
-val globalDebugStates = mutableListOf<Any>()
+val debugStates = mutableListOf<Any>()
 var globalTracing = true
+var globalDebug = false
 
 

@@ -46,8 +46,7 @@ data class AdventResults(
     var part1: String = "",
     var part2Test: String = "",
     var part2: String = ""
-) {
-}
+)
 
 fun readAdventResults(): List<AdventResults> {
     val results = mutableListOf<AdventResults>()
