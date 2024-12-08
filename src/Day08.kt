@@ -37,7 +37,7 @@ class Day08 : DayAdvent {
             allAntennasByAntennaType.map { (antennaType, antennaPositions) ->
                 val antinodePosList = antennaPositions.mapIndexed { index, antennaPos ->
                     val subList = allAntennasByAntennaType[antennaType]!!.subList(index + 1, antennaPositions.size)
-                    val subRes = createPairs1(antennaPos, subList)
+                    val subRes = createAntinodesFromAntennaPairsPart1(antennaPos, subList)
                     subRes
                 }.flatMap { it }
                 allAntinodesByAntennaType[antennaType] = antinodePosList
@@ -50,7 +50,8 @@ class Day08 : DayAdvent {
             return allAntinodePos.size
         }
 
-        private fun createPairs1(pos: Pos, other: MutableList<Pos>): MutableList<Pos> {
+        // Create 2 antinodes for each antenna pairs, pairing input pos with every element in other
+        private fun createAntinodesFromAntennaPairsPart1(pos: Pos, other: MutableList<Pos>): MutableList<Pos> {
             var pairs = mutableListOf<Pos>()
             other.forEachIndexed { index, otherIt ->
                 val dX = (otherIt.x - pos.x).absoluteValue
@@ -63,18 +64,19 @@ class Day08 : DayAdvent {
                     topYpos.y - dY.absoluteValue,
                     topYpos.x + dxFirst
                 )
-                if (isInside(firstPos)) pairs.add(firstPos)
+                if (isInsideMatrix(firstPos)) pairs.add(firstPos)
 
                 val secondPos = Pos(
                     lowYpos.y + dY.absoluteValue,
                     lowYpos.x - dxFirst
                 )
-                if (isInside(secondPos)) pairs.add(secondPos)
+                if (isInsideMatrix(secondPos)) pairs.add(secondPos)
             }
             return pairs
         }
 
-        private fun createPairs2(pos: Pos, other: MutableList<Pos>): MutableList<Pos> {
+        // Create N antinodes for each antenna pairs, pairing input pos with every element in other
+        private fun createAntinodesFromAntennaPairsPart2(pos: Pos, other: MutableList<Pos>): MutableList<Pos> {
             var pairs = mutableListOf<Pos>()
             other.forEachIndexed { index, otherIt ->
                 val dX = (otherIt.x - pos.x).absoluteValue
@@ -88,13 +90,13 @@ class Day08 : DayAdvent {
                 while(true) {
                     pairs.add(itPos)
                     itPos = Pos(itPos.y + dY, itPos.x + dxNext)
-                    if (!isInside(itPos)) break
+                    if (!isInsideMatrix(itPos)) break
                 }
                 // Iterate up from top antenna
                 itPos = topYpos
                 while(true) {
                     itPos = Pos(itPos.y - dY, itPos.x - dxNext)
-                    if (!isInside(itPos)) break
+                    if (!isInsideMatrix(itPos)) break
                     pairs.add(itPos)
                 }
             }
@@ -106,7 +108,7 @@ class Day08 : DayAdvent {
             allAntennasByAntennaType.map { (antennaType, antennaPositions) ->
                 val antinodePosList = antennaPositions.mapIndexed { index, antennaPos ->
                     val subList = allAntennasByAntennaType[antennaType]!!.subList(index + 1, antennaPositions.size)
-                    createPairs2(antennaPos, subList)
+                    createAntinodesFromAntennaPairsPart2(antennaPos, subList)
                 }.flatMap { it }
                 allAntinodesByAntennaType[antennaType] = antinodePosList
             }
@@ -118,7 +120,7 @@ class Day08 : DayAdvent {
             return allAntinodePos.size
         }
 
-        fun isInside(pos: Pos): Boolean {
+        fun isInsideMatrix(pos: Pos): Boolean {
             return pos.y >= 0 && pos.y <= maxY && pos.x >= 0 && pos.x <= maxX
         }
 
@@ -126,7 +128,7 @@ class Day08 : DayAdvent {
             var groupedAntennas = mutableMapOf<Char, MutableList<Pos>>()
             forEachIndexed { y, line ->
                 line.forEachIndexed { x, letter ->
-                    if (letter == '.') return@forEachIndexed // Next x
+                    if (letter == '.') return@forEachIndexed // Next x, skipping all '.'
                     groupedAntennas.insertInto(letter, Pos(y, x))
                 }
             }
