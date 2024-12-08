@@ -5,7 +5,7 @@ import kotlinx.coroutines.runBlocking
 
 fun main(args: Array<String>) = dayRunner(Day07())
 
-val globalMultiThreadEnabled = true
+//val globalMultiThreadEnabled = true
 
 class Day07 : DayAdvent {
 

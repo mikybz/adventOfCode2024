@@ -25,7 +25,7 @@ class Day08 : DayAdvent {
         init {
             allAntennasByAntennaType = antennaMatrix.getAllAntennasByAntennaType()
             allAntinodesByAntennaType = mutableMapOf()
-            if (globalDebug) {
+            if (globalDebugPrint) {
                 printMatrix(antennaMatrix)
                 println(allAntennasByAntennaType)
             }
@@ -45,7 +45,7 @@ class Day08 : DayAdvent {
 
             val allAntinodePos = allAntinodesByAntennaType.values.flatten().distinct().sortedBy { pos -> pos.y }
 
-            if (globalDebug) printOverlappedMatrix(antennaMatrix, allAntinodePos)
+            if (globalDebugPrint) printOverlappedMatrix(antennaMatrix, allAntinodePos)
 
             return allAntinodePos.size
         }
@@ -114,7 +114,7 @@ class Day08 : DayAdvent {
 
             val allAntinodePos = allAntinodesByAntennaType.values.flatten().distinct().sortedBy { pos -> pos.y }
 
-            if (globalDebug) printOverlappedMatrix(antennaMatrix, allAntinodePos)
+            if (globalDebugPrint) printOverlappedMatrix(antennaMatrix, allAntinodePos)
 
             return allAntinodePos.size
         }

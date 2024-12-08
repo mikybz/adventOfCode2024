@@ -15,6 +15,6 @@ fun trackDebugStateValue(state: Any, reset: Boolean = false) {
 
 val debugStates = mutableListOf<Any>()
 var globalTracing = true
-var globalDebug = false
+var globalDebugPrint = true
 
 
