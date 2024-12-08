@@ -1,7 +1,7 @@
 import kotlin.math.absoluteValue
 
 
-fun main(args: Array<String>) = dayRunner(Day01())
+fun main() = dayRunner(Day01())
 
 class Day01 : DayAdvent {
 

@@ -44,6 +44,7 @@ class DayRunAll() {
         }
 
         private fun runAllTests(readStoredResults: Map<String, AdventResults>) {
+            var testsWithError : List<String>  = mutableListOf()
             for (day in allDays) {
                 val dayName = day.javaClass.simpleName
                 // Running current day - prints result internally
@@ -55,12 +56,18 @@ class DayRunAll() {
                     println("Add this to Solutions.txt:")
                     println("$result")
                 } else if (expected != result) {
+                    testsWithError += dayName
                     println("Day $dayName failed. Expected:")
                     println("x $expected")
                     println()
                 }
             }
-            println("Done")
+            println()
+            if(testsWithError.isNotEmpty()) {
+                println("Error: Tests where the output did not match expected values: $testsWithError")
+            } else{
+                println("Success: The output from all days matched the expected output")
+            }
         }
     }
 }

@@ -3,7 +3,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 
-fun main(args: Array<String>) = dayRunner(Day07())
+fun main() = dayRunner(Day07())
 
 //val globalMultiThreadEnabled = true
 

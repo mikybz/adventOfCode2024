@@ -1,4 +1,4 @@
-fun main(args: Array<String>) = dayRunner(Day02())
+fun main() = dayRunner(Day02())
 
 class Day02 : DayAdvent {
 
