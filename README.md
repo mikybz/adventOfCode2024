@@ -113,6 +113,12 @@ Here is how to run it with a timer in windows powershell:
 ```
 On my computer the first 8 days run in 1.2 seconds with multi-threading, and 2.5 seconds with single thread.
 
+## Running single day from console
+Here is how to run day 7 with multi-threading:
+```shell
+java -jar .\build\libs\adventofcode.jar "day07" "mt"
+```
+
 ## Misc
 Alternatively, you can run a specific day's solution from the src folder from Intellij.
 

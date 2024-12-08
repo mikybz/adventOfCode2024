@@ -19,6 +19,19 @@ class DayRunAll() {
             if(args.contains("st")) {
                 globalMultiThreadEnabled = false
             }
+            args.forEach {
+                if(it.startsWith("day")|| it.startsWith("Day")) {
+                    val dayNr = it.substring(3).toInt()
+                    val day = allDays[dayNr - 1]
+                    println("Running single day $dayNr")
+                    println("Settings: multiThreadEnabled=$globalMultiThreadEnabled")
+                    val measureTimeMillis = measureTimeMillis {
+                        dayRunWithResult(day)
+                    }
+                    println("Total time: $measureTimeMillis ms")
+                    return
+                }
+            }
 
 
             println("Settings: multiThreadEnabled=$globalMultiThreadEnabled")
