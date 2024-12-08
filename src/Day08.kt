@@ -1,6 +1,6 @@
 import kotlin.math.absoluteValue
 
-fun main(args: Array<String>) = dayRunner(Day08())
+fun main() = dayRunner(Day08())
 
 class Day08 : DayAdvent {
 
@@ -106,8 +106,7 @@ class Day08 : DayAdvent {
             allAntennasByAntennaType.map { (antennaType, antennaPositions) ->
                 val antinodePosList = antennaPositions.mapIndexed { index, antennaPos ->
                     val subList = allAntennasByAntennaType[antennaType]!!.subList(index + 1, antennaPositions.size)
-                    val subRes = createPairs2(antennaPos, subList)
-                    subRes
+                    createPairs2(antennaPos, subList)
                 }.flatMap { it }
                 allAntinodesByAntennaType[antennaType] = antinodePosList
             }
@@ -122,52 +121,22 @@ class Day08 : DayAdvent {
         fun isInside(pos: Pos): Boolean {
             return pos.y >= 0 && pos.y <= maxY && pos.x >= 0 && pos.x <= maxX
         }
-    }
-}
 
-private fun printOverlappedMatrix(
-    matrix: Array<Array<Char>>,
-    overlappedPositions: List<Pos>,
-    emptyChar: Char = '.'
-) {
-    // Print header numbers
-    matrix.indices.map { if (it > 10 && it % 10 != 0) it % 10 else it }
-        .joinToString(separator = "", prefix = "   ") {
-            it.toString().padEnd(2, padChar = ' ')
-        }.let { println(it) }
-
-    // Print matrix, starting with row numbers, overlapped positions are marked with #
-    matrix.forEachIndexed { y, line ->
-        print(y.toString().padEnd(3, padChar = ' '))
-        line.forEachIndexed { x, letter ->
-            //if (letter == '.') return@forEachIndexed // Next x
-            if (overlappedPositions.contains(Pos(y, x))) {
-                when (letter) {
-                    emptyChar -> print("# ")
-                    else ->
-                        print("${letter}#")
+        private fun Array<Array<Char>>.getAllAntennasByAntennaType(): MutableMap<Char, MutableList<Pos>> {
+            var groupedAntennas = mutableMapOf<Char, MutableList<Pos>>()
+            forEachIndexed { y, line ->
+                line.forEachIndexed { x, letter ->
+                    if (letter == '.') return@forEachIndexed // Next x
+                    groupedAntennas.insertInto(letter, Pos(y, x))
                 }
-            } else {
-                print("${letter} ")
             }
+            return groupedAntennas
         }
-        println()
     }
 }
 
-private fun Array<Array<Char>>.getAllAntennasByAntennaType(): MutableMap<Char, MutableList<Pos>> {
-    var groupedAntennas = mutableMapOf<Char, MutableList<Pos>>()
-    forEachIndexed { y, line ->
-        line.forEachIndexed { x, letter ->
-            if (letter == '.') return@forEachIndexed // Next x
-            groupedAntennas.insertInto(letter, Pos(y, x))
-        }
-    }
-    return groupedAntennas
-}
 
-private fun MutableMap<Char, MutableList<Pos>>.insertInto(ch: Char, pos: Pos) {
-    if (!containsKey(ch)) put(ch, mutableListOf())
-    get(ch)!!.add(pos)
-}
+
+
+
 

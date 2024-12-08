@@ -72,6 +72,11 @@ fun readAdventResults(): List<AdventResults> {
 fun readInput(name: String) = File("src/data", "$name.txt").readLines()
 
 
+fun MutableMap<Char, MutableList<Pos>>.insertInto(ch: Char, pos: Pos) {
+    if (!containsKey(ch)) put(ch, mutableListOf())
+    get(ch)!!.add(pos)
+}
+
 
 data class Pos(val y: Int, val x: Int) {
     operator fun plus(direction: Direction): Pos {
@@ -95,8 +100,6 @@ data class Pos(val y: Int, val x: Int) {
     }
 }
 
-//fun List<Pos>.unique(): List<Pos> = this.distinct()
-
 enum class Directions(val pos: Pos) {
     NORTH(Pos(y = -1, x = 0)),
     EAST(Pos(y = 0, x = 1)),
@@ -108,11 +111,10 @@ enum class Directions(val pos: Pos) {
     NORTH_WEST(Pos(y = -1, x = -1))
 }
 
-
-
 /** Normal Matrix operations */
 fun <T> Array<Array<T>>.getVal(pos: Pos): T = this[pos.y][pos.x]
 
+@Suppress("unused")
 fun <T> Array<Array<T>>.setVal(pos: Pos, value: T) {
     this[pos.y][pos.x] = value
 }
@@ -139,6 +141,7 @@ fun FastMatrix.setPosFast(pos: Pos, dim: Pos, value: Int) {
 
 fun FastMatrix.getPosFast(pos: Pos, dim: Pos) = this[dim.y * pos.y + pos.x]
 
+@Suppress("unused")
 fun fastMatrixToNormal(matrix: FastMatrix, dimensions: Pos): List<List<Int>> = matrix.toList().chunked(dimensions.x)
 
 
@@ -176,6 +179,7 @@ fun <T> List<T>.swapElements( index1: Int, index2: Int): List<T> {
     return newList
 }
 
+@Suppress("unused")
 fun <T> printMatrix(matrix: Collection<Collection<T>>) {
     println(matrix.joinToString(separator = "\n") { it.joinToString(separator = "") })
 }
@@ -185,14 +189,45 @@ fun <T> printMatrix(matrix: Array<Array<T>>) {
 }
 
 
+fun printOverlappedMatrix(
+    matrix: Array<Array<Char>>,
+    overlappedPositions: List<Pos>,
+    emptyChar: Char = '.'
+) {
+    // Print header numbers
+    matrix.indices.map { if (it > 10 && it % 10 != 0) it % 10 else it }
+        .joinToString(separator = "", prefix = "   ") {
+            it.toString().padEnd(2, padChar = ' ')
+        }.let { println(it) }
+
+    // Print matrix, starting with row numbers, overlapped positions are marked with #
+    matrix.forEachIndexed { y, line ->
+        print(y.toString().padEnd(3, padChar = ' '))
+        line.forEachIndexed { x, letter ->
+            //if (letter == '.') return@forEachIndexed // Next x
+            if (overlappedPositions.contains(Pos(y, x))) {
+                when (letter) {
+                    emptyChar -> print("# ")
+                    else ->
+                        print("${letter}#")
+                }
+            } else {
+                print("${letter} ")
+            }
+        }
+        println()
+    }
+}
+
 // Create one list out of two by interleaving elements
+@Suppress("unused")
 fun <T> mergeAlternating(listA: List<T>, listB: List<T>): List<T> {
     val minSize = minOf(listA.size, listB.size)
     val interleaved = (0 until minSize).flatMap { listOf(listA[it], listB[it]) }
     return interleaved + listA.drop(minSize) + listB.drop(minSize)
 }
 
-
+@Suppress("unused")
 fun <T> transpose(input: List<List<T>>): List<List<T>> =
     (0..input[0].size - 1)
         .map { y ->
