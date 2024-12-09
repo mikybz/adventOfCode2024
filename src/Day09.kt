@@ -1,19 +1,13 @@
 fun main() = dayRunner(Day09())
 
 class Day09 : DayAdvent {
-    // To low: 1178849310
+    data class FsInfo(val fileSystemBlocks: Array<Int>, val blockList: MutableList<Block>, val fileList: MutableList<Block>)
+
     override fun part1(input: List<String>): Any {
         val fsBlocks = input.parseToFilesystem()
         compact(fsBlocks)
         return calculate(fsBlocks)
     }
-    override fun part2(input: List<String>): Any {
-        val fsInfo = input.parseToFilesystemAndBlocklist()
-        compactNonFragmented(fsInfo)
-        return calculate(fsInfo)
-    }
-
-
 
     private fun compact(fsBlocks: Array<Int>) {
         var front = 0
@@ -26,29 +20,6 @@ class Day09 : DayAdvent {
             fsBlocks[back] = -1
         }
     }
-    data class FsInfo(val fileSystemBlocks: Array<Int>, val blockList: MutableList<Block>, val fileList: MutableList<Block>){}
-
-    private fun compactNonFragmented(fsInfo: FsInfo): Int {
-        val (fileSystemBlocks,  blockList, fileList) = fsInfo
-        fileList.reversed().forEachIndexed() { index, file ->
-
-            val emptyBlockIndex = blockList.indexOfFirst() { it.file == -1 && it.size >= file.size }
-            if (emptyBlockIndex != -1) {
-                val emptyblock = blockList[emptyBlockIndex]
-                blockList.removeAt(emptyBlockIndex)
-                blockList.remove(file)
-                blockList.add(emptyBlockIndex, Block(file.size, file.file))
-                val remaining = emptyblock.size - file.size
-                if (remaining > 0) {
-                    blockList.add(emptyBlockIndex + 1, Block(remaining, -1))
-                }
-                println(blockList)
-                blockList
-            }
-        }
-        return 0
-
-    }
 
     private fun calculate(fsBlocks: Array<Int>): Long =
         fsBlocks.foldIndexed(0L) { index, acc, block ->
@@ -56,19 +27,88 @@ class Day09 : DayAdvent {
             acc + (index * block.toLong())
         }
 
+
+    override fun part2(input: List<String>): Any {
+        val fsInfo = input.parseToFilesystemAndBlocklist()
+        compactNonFragmented(fsInfo)
+        return calculate(fsInfo)
+    }
+
+
+
+
+
+
+
+
+    private fun compactNonFragmented(fsInfo: FsInfo) {
+        val (fileSystemBlocks,  blockList, fileList) = fsInfo
+        fileList.reversed().forEachIndexed() { index, file ->
+
+            val emptyBlockIndex = blockList.indexOfFirst() { it.file == -1 && it.size >= file.size }
+            val fileIndex = blockList.indexOf(file)
+
+            if (emptyBlockIndex>fileIndex)
+                return@forEachIndexed
+
+            if (emptyBlockIndex != -1) {
+
+                blockList[fileIndex] = Block(file.size, -1)
+//                println("Mov $file from $fileIndex to $emptyBlockIndex")
+
+                val emptyblock = blockList[emptyBlockIndex]
+
+//                blockList.remove(file)
+//                blockList.add(emptyBlockIndex, Block(file.size, file.file))
+
+                //blockList.removeAt(emptyBlockIndex)
+                blockList[emptyBlockIndex] = file
+
+                val remaining = emptyblock.size - file.size
+                if (remaining > 0) {
+                    blockList.add(emptyBlockIndex + 1, Block(remaining, -1))
+                }
+                //println(blockList)
+                mergeEmptyBlocks(blockList)
+//                println(blockList)
+                blockList
+            }
+        }
+    }
+
+    private fun mergeEmptyBlocks(blocks: MutableList<Block>) {
+        var max :Int = blocks.size-1
+        var i = 0
+        do {
+            if(blocks[i].isFree() && blocks[i + 1].isFree()) {
+                blocks[i].size += blocks[i + 1].size
+                blocks.removeAt(i + 1)
+//                println("Merged empty $i with next")
+                max--
+            } else {
+                i++
+            }
+        } while (i<max)
+    }
+
+
+
     private fun calculate(info: FsInfo): Any {
-        return info.blockList.foldIndexed(0 to 0L) { index, (realIndex, acc: Long), block ->
+        val resultat = info.blockList.foldIndexed(0 to 0L) { index, (realIndex, acc: Long), block ->
             val newRealIndex = realIndex + block.size
-            if(block.file == -1) {
+            if (block.file == -1) {
                 Pair(newRealIndex, acc)
             } else {
                 var accNew = acc
-                (realIndex..newRealIndex).forEach { currentIndex ->
-                    accNew += currentIndex * block.file
+                (realIndex..newRealIndex-1).forEach { currentIndex ->
+                    val extra = currentIndex * block.file
+                    accNew += extra
+                    accNew
                 }
-                Pair(newRealIndex, acc)
+                Pair(newRealIndex, accNew)
             }
         }
+        return resultat.second
 
     }
 
@@ -123,10 +163,4 @@ class Day09 : DayAdvent {
         }.joinToString("")
         println(fs)
     }
-
-//        map { line ->
-//        line.split("  ", limit=2)
-//            .map(String::trim)
-//            .let { (a, b) -> a.toInt() to b.toInt() }
-//    }
 }
