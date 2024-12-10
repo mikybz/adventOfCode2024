@@ -10,25 +10,25 @@ class Day10 : DayAdvent {
 
     private fun countPaths(matrix: Array<Array<Char>>): Int {
         var validPosList = startPositions(matrix)
-        println("Start positions: $validPosList")
-        val result = validPosList.map { pos ->
-            iterateToPos(pos, matrix, '1', '9')
-        }.sumOf { nr -> println("Score: $nr"); nr }
-        println("Sum of: $result")
+//        println("Start positions: $validPosList")
+        val result = validPosList.sumOf { pos ->
+            iterateToPos(pos, matrix)
+        }
+//        println("Sum of: $result")
         return result
     }
 
-    private fun iterateToPos(startPos: Pyx, matrix: Array<Array<Char>>, startNr: Char, endNr: Char): Int {
+    private fun iterateToPos(startPos: Pyx, matrix: Array<Array<Char>>): Int {
 
         var validPosList = listOf<Pyx>(startPos)
-        for (nextNr in startNr..endNr) {
-            println("Iteration $nextNr")
+        for (nextNr in '1'..'9') {
+//            println("Iteration $nextNr")
             validPosList = validPosList.flatMap { pos: Pyx ->
                 pos.get4Neighbours()
                     .filter { neighbour -> !neighbour.isOutside(matrix) && matrix.getVal(neighbour) == nextNr }
             }.distinct()
-            println("Valid positions: $validPosList")
-            println("Nr of valid positions: ${validPosList.size}")
+//            println("Valid positions: $validPosList")
+//            println("Nr of valid positions: ${validPosList.size}")
         }
         return validPosList.size
     }
@@ -48,36 +48,28 @@ class Day10 : DayAdvent {
 
     private fun countPaths2(matrix: Array<Array<Char>>): Int {
         var validPosList = startPositions(matrix)
-        println("Start positions: $validPosList")
-        val result = validPosList.map { pos ->
-            iterateToPos2(pos, matrix, '1', '9')
-        }.sumOf { nr -> println("Score: $nr"); nr }
-        println("Sum of: $result")
+//        println("Start positions: $validPosList")
+        val result = validPosList.sumOf { pos ->
+            iterateToPos2(pos, matrix)
+        }
+//        println("Sum of: $result")
         return result
     }
 
-    private fun iterateToPos2(startPos: Pyx, matrix: Array<Array<Char>>, startNr: Char, endNr: Char): Int {
+    private fun iterateToPos2(startPos: Pyx, matrix: Array<Array<Char>>): Int {
 
         var validPosList = listOf<Pyx>(startPos)
-        for (nextNr in startNr..endNr) {
-            println("Iteration $nextNr")
+        for (nextNr in '1'..'9') {
+//            println("Iteration $nextNr")
             validPosList = validPosList.flatMap { pos: Pyx ->
                 pos.get4Neighbours()
                     .filter { neighbour -> !neighbour.isOutside(matrix) && matrix.getVal(neighbour) == nextNr }
             }
-            println("Valid positions: $validPosList")
-            println("Nr of valid positions: ${validPosList.size}")
+//            println("Valid positions: $validPosList")
+//            println("Nr of valid positions: ${validPosList.size}")
         }
         return validPosList.size
     }
-
-
-
-
-
-
-
-
 }
 
 private fun Pyx.get4Neighbours(): List<Pyx> = listOf<Pyx>(Pyx(y - 1, x), Pyx(y + 1, x), Pyx(y, x - 1), Pyx(y, x + 1))
