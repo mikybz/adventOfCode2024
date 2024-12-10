@@ -17,7 +17,7 @@ class Day04 : DayAdvent {
             for (x in 0 until this[y].size) {
                 dir@for (direction in directions) {
                     for (i in 0 until txtLength) {
-                        val (outY, outX) = Pos(y, x) + direction.pos * i
+                        val (outY, outX) = Pyx(y, x) + direction.pyx * i
                         if (outY < 0 || outY >= matrixLength || outX < 0 || outX >= this[y].size) {
                             continue@dir
                         }

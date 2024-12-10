@@ -72,51 +72,54 @@ fun readAdventResults(): List<AdventResults> {
 fun readInput(name: String) = File("src/data", "$name.txt").readLines()
 
 
-fun MutableMap<Char, MutableList<Pos>>.insertInto(ch: Char, pos: Pos) {
+fun MutableMap<Char, MutableList<Pyx>>.insertInto(ch: Char, pyx: Pyx) {
     if (!containsKey(ch)) put(ch, mutableListOf())
-    get(ch)!!.add(pos)
+    get(ch)!!.add(pyx)
 }
 
 
-data class Pos(val y: Int, val x: Int) {
-    operator fun plus(direction: Direction): Pos {
-        return Pos(y + direction.dy, x + direction.dx)
+data class Pyx(val y: Int, val x: Int) {
+    operator fun plus(direction: Direction): Pyx {
+        return Pyx(y + direction.dy, x + direction.dx)
     }
 
-    operator fun plus(other: Pos): Pos {
-        return Pos(y + other.y, x + other.x)
+    operator fun plus(other: Pyx): Pyx {
+        return Pyx(y + other.y, x + other.x)
     }
 
-    operator fun times(other: Pos): Pos {
-        return Pos(y * other.y, x * other.x)
+    operator fun times(other: Pyx): Pyx {
+        return Pyx(y * other.y, x * other.x)
     }
 
-    operator fun times(other: Int): Pos {
-        return Pos(y * other, x * other)
+    operator fun times(other: Int): Pyx {
+        return Pyx(y * other, x * other)
     }
 
     fun isOutside(matrix: Array<Array<Int>>): Boolean {
         return y < 0 || y >= matrix.size || x < 0 || x >= matrix[y].size
     }
+    fun isOutside(matrix: Array<Array<Char>>): Boolean {
+        return y < 0 || y >= matrix.size || x < 0 || x >= matrix[y].size
+    }
 }
 
-enum class Directions(val pos: Pos) {
-    NORTH(Pos(y = -1, x = 0)),
-    EAST(Pos(y = 0, x = 1)),
-    SOUTH(Pos(y = 1, x = 0)),
-    WEST(Pos(y = 0, x = -1)),
-    NORTH_EAST(Pos(y = -1, x = 1)),
-    SOUTH_EAST(Pos(y = 1, x = 1)),
-    SOUTH_WEST(Pos(y = 1, x = -1)),
-    NORTH_WEST(Pos(y = -1, x = -1))
+enum class Directions(val pyx: Pyx) {
+    NORTH(Pyx(y = -1, x = 0)),
+    EAST(Pyx(y = 0, x = 1)),
+    SOUTH(Pyx(y = 1, x = 0)),
+    WEST(Pyx(y = 0, x = -1)),
+    NORTH_EAST(Pyx(y = -1, x = 1)),
+    SOUTH_EAST(Pyx(y = 1, x = 1)),
+    SOUTH_WEST(Pyx(y = 1, x = -1)),
+    NORTH_WEST(Pyx(y = -1, x = -1))
 }
 
 /** Normal Matrix operations */
-fun <T> Array<Array<T>>.getVal(pos: Pos): T = this[pos.y][pos.x]
+inline fun <T> Array<Array<T>>.getVal(pyx: Pyx): T = this[pyx.y][pyx.x]
 
 @Suppress("unused")
-fun <T> Array<Array<T>>.setVal(pos: Pos, value: T) {
-    this[pos.y][pos.x] = value
+fun <T> Array<Array<T>>.setVal(pyx: Pyx, value: T) {
+    this[pyx.y][pyx.x] = value
 }
 
 inline fun <reified T> List<List<T>>.toArrayMatrix(): Array<Array<T>> {
@@ -133,16 +136,16 @@ inline fun <reified R> List<String>.toArrayMatrix(transform: (Char) -> R): Array
 
 typealias FastMatrix = IntArray
 /** Fast Matrix is implemented as an Integer 1D array, for extremely fast access and initialization */
-fun createFastMatrix(dimensions: Pos): IntArray = IntArray(dimensions.y * dimensions.x) { 0 }
+fun createFastMatrix(dimensions: Pyx): IntArray = IntArray(dimensions.y * dimensions.x) { 0 }
 
-fun FastMatrix.setPosFast(pos: Pos, dim: Pos, value: Int) {
-    this[dim.y * pos.y + pos.x] = value
+fun FastMatrix.setPosFast(pyx: Pyx, dim: Pyx, value: Int) {
+    this[dim.y * pyx.y + pyx.x] = value
 }
 
-fun FastMatrix.getPosFast(pos: Pos, dim: Pos) = this[dim.y * pos.y + pos.x]
+fun FastMatrix.getPosFast(pyx: Pyx, dim: Pyx) = this[dim.y * pyx.y + pyx.x]
 
 @Suppress("unused")
-fun fastMatrixToNormal(matrix: FastMatrix, dimensions: Pos): List<List<Int>> = matrix.toList().chunked(dimensions.x)
+fun fastMatrixToNormal(matrix: FastMatrix, dimensions: Pyx): List<List<Int>> = matrix.toList().chunked(dimensions.x)
 
 
 
@@ -191,7 +194,7 @@ fun <T> printMatrix(matrix: Array<Array<T>>) {
 
 fun printOverlappedMatrix(
     matrix: Array<Array<Char>>,
-    overlappedPositions: List<Pos>,
+    overlappedPositions: List<Pyx>,
     emptyChar: Char = '.'
 ) {
     // Print header numbers
@@ -205,7 +208,7 @@ fun printOverlappedMatrix(
         print(y.toString().padEnd(3, padChar = ' '))
         line.forEachIndexed { x, letter ->
             //if (letter == '.') return@forEachIndexed // Next x
-            if (overlappedPositions.contains(Pos(y, x))) {
+            if (overlappedPositions.contains(Pyx(y, x))) {
                 when (letter) {
                     emptyChar -> print("# ")
                     else ->

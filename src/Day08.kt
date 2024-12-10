@@ -19,8 +19,8 @@ class Day08 : DayAdvent {
     class World(val antennaMatrix: Array<Array<Char>>) {
         val maxY: Int = antennaMatrix.size - 1
         val maxX: Int = antennaMatrix[0].size - 1
-        val allAntennasByAntennaType: MutableMap<Char, MutableList<Pos>>
-        var allAntinodesByAntennaType: MutableMap<Char, List<Pos>>
+        val allAntennasByAntennaType: MutableMap<Char, MutableList<Pyx>>
+        var allAntinodesByAntennaType: MutableMap<Char, List<Pyx>>
 
         init {
             allAntennasByAntennaType = antennaMatrix.getAllAntennasByAntennaType()
@@ -51,51 +51,51 @@ class Day08 : DayAdvent {
         }
 
         // Create 2 antinodes for each antenna pairs, pairing input pos with every element in other
-        private fun createAntinodesFromAntennaPairsPart1(pos: Pos, other: MutableList<Pos>): MutableList<Pos> {
-            var pairs = mutableListOf<Pos>()
+        private fun createAntinodesFromAntennaPairsPart1(pyx: Pyx, other: MutableList<Pyx>): MutableList<Pyx> {
+            var pairs = mutableListOf<Pyx>()
             other.forEachIndexed { index, otherIt ->
-                val dX = (otherIt.x - pos.x).absoluteValue
-                val dY = (otherIt.y - pos.y)
-                val topYpos = if (dY > 0) pos else otherIt
-                val lowYpos = if (topYpos == otherIt) pos else otherIt
+                val dX = (otherIt.x - pyx.x).absoluteValue
+                val dY = (otherIt.y - pyx.y)
+                val topYpos = if (dY > 0) pyx else otherIt
+                val lowYpos = if (topYpos == otherIt) pyx else otherIt
                 val topYposIsFirst = topYpos.x < lowYpos.x
                 val dxFirst = if (topYposIsFirst) -dX else dX
-                val firstPos = Pos(
+                val firstPyx = Pyx(
                     topYpos.y - dY.absoluteValue,
                     topYpos.x + dxFirst
                 )
-                if (isInsideMatrix(firstPos)) pairs.add(firstPos)
+                if (isInsideMatrix(firstPyx)) pairs.add(firstPyx)
 
-                val secondPos = Pos(
+                val secondPyx = Pyx(
                     lowYpos.y + dY.absoluteValue,
                     lowYpos.x - dxFirst
                 )
-                if (isInsideMatrix(secondPos)) pairs.add(secondPos)
+                if (isInsideMatrix(secondPyx)) pairs.add(secondPyx)
             }
             return pairs
         }
 
         // Create N antinodes for each antenna pairs, pairing input pos with every element in other
-        private fun createAntinodesFromAntennaPairsPart2(pos: Pos, other: MutableList<Pos>): MutableList<Pos> {
-            var pairs = mutableListOf<Pos>()
+        private fun createAntinodesFromAntennaPairsPart2(pyx: Pyx, other: MutableList<Pyx>): MutableList<Pyx> {
+            var pairs = mutableListOf<Pyx>()
             other.forEachIndexed { index, otherIt ->
-                val dX = (otherIt.x - pos.x).absoluteValue
-                val dY = (otherIt.y - pos.y)
-                val topYpos = if (dY > 0) pos else otherIt
-                val lowYpos = if (topYpos == otherIt) pos else otherIt
+                val dX = (otherIt.x - pyx.x).absoluteValue
+                val dY = (otherIt.y - pyx.y)
+                val topYpos = if (dY > 0) pyx else otherIt
+                val lowYpos = if (topYpos == otherIt) pyx else otherIt
                 val topYposIsFirst = topYpos.x < lowYpos.x
                 val dxNext = if (topYposIsFirst) dX else -dX
                 // Iterate down from top antenna
                 var itPos = topYpos
                 while(true) {
                     pairs.add(itPos)
-                    itPos = Pos(itPos.y + dY, itPos.x + dxNext)
+                    itPos = Pyx(itPos.y + dY, itPos.x + dxNext)
                     if (!isInsideMatrix(itPos)) break
                 }
                 // Iterate up from top antenna
                 itPos = topYpos
                 while(true) {
-                    itPos = Pos(itPos.y - dY, itPos.x - dxNext)
+                    itPos = Pyx(itPos.y - dY, itPos.x - dxNext)
                     if (!isInsideMatrix(itPos)) break
                     pairs.add(itPos)
                 }
@@ -120,16 +120,16 @@ class Day08 : DayAdvent {
             return allAntinodePos.size
         }
 
-        fun isInsideMatrix(pos: Pos): Boolean {
-            return pos.y >= 0 && pos.y <= maxY && pos.x >= 0 && pos.x <= maxX
+        fun isInsideMatrix(pyx: Pyx): Boolean {
+            return pyx.y >= 0 && pyx.y <= maxY && pyx.x >= 0 && pyx.x <= maxX
         }
 
-        private fun Array<Array<Char>>.getAllAntennasByAntennaType(): MutableMap<Char, MutableList<Pos>> {
-            var groupedAntennas = mutableMapOf<Char, MutableList<Pos>>()
+        private fun Array<Array<Char>>.getAllAntennasByAntennaType(): MutableMap<Char, MutableList<Pyx>> {
+            var groupedAntennas = mutableMapOf<Char, MutableList<Pyx>>()
             forEachIndexed { y, line ->
                 line.forEachIndexed { x, letter ->
                     if (letter == '.') return@forEachIndexed // Next x, skipping all '.'
-                    groupedAntennas.insertInto(letter, Pos(y, x))
+                    groupedAntennas.insertInto(letter, Pyx(y, x))
                 }
             }
             return groupedAntennas

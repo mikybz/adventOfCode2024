@@ -12,7 +12,7 @@ class Day06 : DayAdvent {
     }
 
     fun parseInput(input: List<String>): World {
-        var pos = Pos(0, 0)
+        var pyx = Pyx(0, 0)
         var dir = Direction.NORTH
 
         val cave = input.mapIndexed { y, line ->
@@ -20,7 +20,7 @@ class Day06 : DayAdvent {
                 when (ch) {
                     '#' -> 1
                     '^' -> {
-                        pos = Pos(y, x); 0
+                        pyx = Pyx(y, x); 0
                     }
 
                     else -> 0
@@ -28,21 +28,21 @@ class Day06 : DayAdvent {
             }
         }.toArrayMatrix()
 
-        return World(cave, pos, dir)
+        return World(cave, pyx, dir)
     }
 
-    data class World(val cave: Array<Array<Int>>, var pos: Pos, var dir: Direction) {
+    data class World(val cave: Array<Array<Int>>, var pyx: Pyx, var dir: Direction) {
         var finished = false
         var steps = 0
         var turns = 0
-        val startPos = pos
-        val dimensions = Pos(cave.size, cave[0].size)
+        val startPos = pyx
+        val dimensions = Pyx(cave.size, cave[0].size)
         var exploredPt2Fast = createFastMatrix(dimensions)
         var stuck = false
-        var testPos: Pos? = null
+        var testPyx: Pyx? = null
 
         fun iterate() {
-            val nextPos = pos + dir
+            val nextPos = pyx + dir
             if (nextPos.isOutside(cave)) {
                 finished = true
                 return
@@ -52,7 +52,7 @@ class Day06 : DayAdvent {
                 return
             }
             if (cave[nextPos.y][nextPos.x] == 0 && !crashedInTestPos(nextPos)) {
-                pos = nextPos
+                pyx = nextPos
                 steps++
                 //exploredFast.setPosFast(pos, dimensions, 1)
                 return
@@ -65,16 +65,16 @@ class Day06 : DayAdvent {
         // For part 2 we do not want add the testItem to the collition detection matrix
         // since then we have to deepcopy the world, to allow parallel processing
         // Instead we have a separate check for it
-        private fun crashedInTestPos(pos: Pos): Boolean {
-            return testPos?.let {
-                it == pos
+        private fun crashedInTestPos(pyx: Pyx): Boolean {
+            return testPyx?.let {
+                it == pyx
             } ?: false
         }
 
-        private fun pt2PosVerification(nextPos: Pos, dir1: Direction): Boolean {
-            val previousMask = exploredPt2Fast.getPosFast(nextPos, dimensions)
+        private fun pt2PosVerification(nextPyx: Pyx, dir1: Direction): Boolean {
+            val previousMask = exploredPt2Fast.getPosFast(nextPyx, dimensions)
             val updatePosMask = previousMask or dir1.getPosMask()
-            exploredPt2Fast.setPosFast(nextPos, dimensions, updatePosMask)
+            exploredPt2Fast.setPosFast(nextPyx, dimensions, updatePosMask)
 
             if (previousMask == updatePosMask) {
                 stuck = true
@@ -101,14 +101,14 @@ class Day06 : DayAdvent {
 
     fun part2Inner(y: Int, world: World, paradoxTable: IntArray) {
         world.cave[y].indices.forEach { x ->
-            val testPos = Pos(y, x)
-            if (world.cave.getVal(testPos) != 0) {
+            val testPyx = Pyx(y, x)
+            if (world.cave.getVal(testPyx) != 0) {
                 return@forEach
             }
             val testWorld = world.copy()
-            testWorld.testPos = testPos
+            testWorld.testPyx = testPyx
             if (testWorld.run()) {
-                paradoxTable.setPosFast(testPos, world.dimensions, 1)
+                paradoxTable.setPosFast(testPyx, world.dimensions, 1)
             }
         }
     }
