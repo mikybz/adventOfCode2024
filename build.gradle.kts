@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "2.1.0"
     application
+    id("org.graalvm.buildtools.native") version "0.9.25" // GraalVM plugin
 }
 
 application {
@@ -51,6 +52,15 @@ tasks.register<Jar>("fatJar") {
     exclude("META-INF/services/javax.script.ScriptEngineFactory") // Exclude specific file
     manifest {
         attributes["Main-Class"] = "DayRunAll"
+    }
+}
+// Build with: gradle nativeCompile
+graalvmNative {
+    binaries {
+        named("main") {
+            imageName.set("adventofcode-native")
+            mainClass.set("DayRunAll")
+        }
     }
 }
 
