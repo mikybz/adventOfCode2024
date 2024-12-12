@@ -85,8 +85,10 @@ data class Pyx(val y: Int, val x: Int) {
     operator fun times(other: Int): Pyx = Pyx(y * other, x * other)
     fun isOutside(matrix: Array<Array<Int>>): Boolean = y < 0 || y >= matrix.size || x < 0 || x >= matrix[y].size
     fun isOutside(matrix: Array<Array<Char>>): Boolean = y < 0 || y >= matrix.size || x < 0 || x >= matrix[y].size
+    fun isOutside(dim:Pyx): Boolean = y<0 || y>=dim.y ||  x < 0 || x >= dim.x
+    fun isOutside(matrix: Array<CharArray>): Boolean = y < 0 || y >= matrix.size || x < 0 || x >= matrix[y].size
     fun get4Neighbours(): List<Pyx> = listOf<Pyx>(Pyx(y - 1, x), Pyx(y + 1, x), Pyx(y, x - 1), Pyx(y, x + 1))
-    override fun toString(): String = "($x, $y)"
+    override fun toString(): String = "($y, $x)"
     fun toList(): List<Int> = listOf(x, y)
     companion object {
         fun ofXY(x: Int, y: Int) = Pyx(y, x)

@@ -24,14 +24,14 @@ class Day11 : DayAdvent {
         val nextIteration = iterationsLeft - 1
         val sum = when {
             nr == 0L -> stoneSum(1, nextIteration)
-            nr >= 10L && (nr.toString().length % 2) == 0 -> splitNr(nr)
-                .sumOf { stoneSum(it, nextIteration) }
-
+            evenDigits(nr) -> splitNr(nr).sumOf { stoneSum(it, nextIteration) }
             else -> stoneSum(nr * 2024, nextIteration)
         }
         stoneResultMap[key] = sum
         return sum
     }
+
+    private inline fun evenDigits(nr: Long): Boolean = nr >= 10L && (nr.toString().length % 2) == 0
 
     private fun splitNr(nr: Long): List<Long> {
         val strNr = nr.toString()
