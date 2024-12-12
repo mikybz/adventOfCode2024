@@ -125,6 +125,11 @@ inline fun <reified R> List<String>.toArrayMatrix(transform: (Char) -> R): Array
     }.toTypedArray()
 }
 
+fun List<String>.toCharArrayMatrix(): Array<CharArray> {
+    return this.map { line ->
+        line.toCharArray()
+    }.toTypedArray()
+}
 
 typealias FastMatrix = IntArray
 
@@ -179,6 +184,10 @@ fun <T> printMatrix(matrix: Collection<Collection<T>>) {
 }
 
 fun <T> printMatrix(matrix: Array<Array<T>>) {
+    println(matrix.joinToString(separator = "\n") { it.joinToString(separator = "") })
+}
+
+fun printMatrix(matrix: Array<CharArray>) {
     println(matrix.joinToString(separator = "\n") { it.joinToString(separator = "") })
 }
 
