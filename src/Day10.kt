@@ -72,6 +72,5 @@ class Day10 : DayAdvent {
     }
 }
 
-private fun Pyx.get4Neighbours(): List<Pyx> = listOf<Pyx>(Pyx(y - 1, x), Pyx(y + 1, x), Pyx(y, x - 1), Pyx(y, x + 1))
 
 

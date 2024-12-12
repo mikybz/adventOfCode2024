@@ -79,27 +79,18 @@ fun MutableMap<Char, MutableList<Pyx>>.insertInto(ch: Char, pyx: Pyx) {
 
 
 data class Pyx(val y: Int, val x: Int) {
-    operator fun plus(direction: Direction): Pyx {
-        return Pyx(y + direction.dy, x + direction.dx)
-    }
-
-    operator fun plus(other: Pyx): Pyx {
-        return Pyx(y + other.y, x + other.x)
-    }
-
-    operator fun times(other: Pyx): Pyx {
-        return Pyx(y * other.y, x * other.x)
-    }
-
-    operator fun times(other: Int): Pyx {
-        return Pyx(y * other, x * other)
-    }
-
-    fun isOutside(matrix: Array<Array<Int>>): Boolean {
-        return y < 0 || y >= matrix.size || x < 0 || x >= matrix[y].size
-    }
-    fun isOutside(matrix: Array<Array<Char>>): Boolean {
-        return y < 0 || y >= matrix.size || x < 0 || x >= matrix[y].size
+    operator fun plus(direction: Direction): Pyx = Pyx(y + direction.dy, x + direction.dx)
+    operator fun plus(other: Pyx): Pyx = Pyx(y + other.y, x + other.x)
+    operator fun times(other: Pyx): Pyx = Pyx(y * other.y, x * other.x)
+    operator fun times(other: Int): Pyx = Pyx(y * other, x * other)
+    fun isOutside(matrix: Array<Array<Int>>): Boolean = y < 0 || y >= matrix.size || x < 0 || x >= matrix[y].size
+    fun isOutside(matrix: Array<Array<Char>>): Boolean = y < 0 || y >= matrix.size || x < 0 || x >= matrix[y].size
+    fun get4Neighbours(): List<Pyx> = listOf<Pyx>(Pyx(y - 1, x), Pyx(y + 1, x), Pyx(y, x - 1), Pyx(y, x + 1))
+    override fun toString(): String = "($x, $y)"
+    fun toList(): List<Int> = listOf(x, y)
+    companion object {
+        fun ofXY(x: Int, y: Int) = Pyx(y, x)
+        fun ofYX(y: Int, x: Int) = Pyx(y, x)
     }
 }
 
@@ -127,6 +118,7 @@ inline fun <reified T> List<List<T>>.toArrayMatrix(): Array<Array<T>> {
         this[rowIndex].toTypedArray()
     }
 }
+
 inline fun <reified R> List<String>.toArrayMatrix(transform: (Char) -> R): Array<Array<R>> {
     return this.map { line ->
         line.map { char -> transform(char) }.toTypedArray()
@@ -135,6 +127,7 @@ inline fun <reified R> List<String>.toArrayMatrix(transform: (Char) -> R): Array
 
 
 typealias FastMatrix = IntArray
+
 /** Fast Matrix is implemented as an Integer 1D array, for extremely fast access and initialization */
 fun createFastMatrix(dimensions: Pyx): IntArray = IntArray(dimensions.y * dimensions.x) { 0 }
 
@@ -146,8 +139,6 @@ fun FastMatrix.getPosFast(pyx: Pyx, dim: Pyx) = this[dim.y * pyx.y + pyx.x]
 
 @Suppress("unused")
 fun fastMatrixToNormal(matrix: FastMatrix, dimensions: Pyx): List<List<Int>> = matrix.toList().chunked(dimensions.x)
-
-
 
 
 /**
@@ -169,7 +160,7 @@ fun <T> List<T>.subListSplitter(predicate: (T) -> Boolean): List<List<T>> =
         }
     }
 
-fun <T> List<T>.swapElements( index1: Int, index2: Int): List<T> {
+fun <T> List<T>.swapElements(index1: Int, index2: Int): List<T> {
     // Create a mutable copy of the list
     val newList = toMutableList()
 
