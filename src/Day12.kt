@@ -40,7 +40,7 @@ class Day12 : DayAdvent {
         fun part1sum(): Int {
             return regions.sumOf { reg-> reg.sumPart1() }
         }
-        fun part1sum(): Int {
+        fun part2sum(): Int {
             return regions.sumOf { reg-> reg.sumPart2() }
         }
 
@@ -89,19 +89,31 @@ class Day12 : DayAdvent {
                 return edges
             }
 
-
             fun sumPart2(): Int {
                 val area = posList.size
 
-                val edges = posList.sumOf { getEdges2(it) }
-                println("Region ${charx} area: ${area} edges: ${edges} price: ${ area * edges} ")
+                val edges = getEdges2()
+                //println("Region ${charx} area: ${area} edges: ${edges} price: ${ area * edges} ")
                 return area * edges
             }
-            fun getEdges2(pyx: Pyx): Int {
-                val edges = pyx.get4Neighbours().count {
-                    it.isOutside(dim) || regionWorld.get(it) != charx }
+            fun getEdges2(): Int {
+                val start = PosDir(startPos, Directions.NORTH)
+                var currentPos = start
+                var edges = 0
+                while(true) {
+                    val checkTurnLeftPos = currentPos.leftTurnPossible()
+
+
+
+                posList.forEach { pos ->
+                    val edge = pos.get4Neighbours().count {
+                        it.isOutside(dim) || regionWorld.get(it) != charx }
+                    edges += edge
+                }
                 return edges
+
             }
+            data class PosDir(val pos: Pyx, val dir: Directions)
 
         }
 

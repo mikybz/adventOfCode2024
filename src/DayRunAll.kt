@@ -5,7 +5,7 @@ var globalMultiThreadEnabled = true
 class DayRunAll() {
     companion object {
         val allDays: Array<DayAdvent> =
-            arrayOf(Day01(), Day02(), Day03(), Day04(), Day05(), Day06(), Day07(), Day08(), Day09(), Day10(), Day11())
+            arrayOf(Day01(), Day02(), Day03(), Day04(), Day05(), Day06(), Day07(), Day08(), Day09(), Day10(), Day11(), Day12())
 
         @JvmStatic
         fun main(args: Array<String>) {
